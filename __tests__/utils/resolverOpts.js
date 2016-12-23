@@ -1,20 +1,18 @@
-var path = require('path');
-var fs = require('fs');
-var babel = require('babel-core');
-var pluginImport = require('../../');
+const babel = require('babel-core')
+const pluginImport = require('../../')
 
-module.exports = filename => {
-    return new Promise((resolve, reject) => {
-        var our = babel.transformFile(
-            filename,
-            {plugins: [[pluginImport, {FLAVORS: 'custom,tipsi,whitelabel'}]]},
-            ((err, { code }) => {
-                if (err) {
-                    reject(err);
-                }
+module.exports = filename => (
+  new Promise((resolve, reject) => {
+    babel.transformFile(
+      filename,
+      { plugins: [[pluginImport, { FLAVORS: 'custom,tipsi,whitelabel' }]] },
+      ((err, { code }) => {
+        if (err) {
+          reject(err)
+        }
 
-                resolve(code);
-            })
-        );
-    });
-};
+        resolve(code)
+      })
+    )
+  })
+)
