@@ -1,6 +1,7 @@
 .travis
 __tests__
 example
+example_tmp
 scripts
 .editorconfig
 .eslintrc
