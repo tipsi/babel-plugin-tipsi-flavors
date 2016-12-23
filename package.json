@@ -4,7 +4,8 @@
   "description": "Babel plugin helps set imports with provided order",
   "main": "index.js",
   "scripts": {
-    "test": "FLAVORS=custom,tipsi,whitelabel node --harmony ./__tests__/index.js"
+    "test": "FLAVORS=custom,tipsi,whitelabel node --harmony ./__tests__/index.js",
+    "ci": "scripts/local-ci.sh"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,12 @@
   "homepage": "https://github.com/tipsi/babel-plugin-tipsi-flavors#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
-    "tape-async": "^2.1.1"
+    "tape-async": "^2.1.1",
+    "babel-eslint": "^7.0.0",
+    "eslint": "^3.7.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0"
   }
 }

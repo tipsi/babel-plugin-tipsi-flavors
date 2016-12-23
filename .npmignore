@@ -1,1 +1,9 @@
+.travis
 __tests__
+example
+scripts
+.editorconfig
+.eslintrc
+.travis.yml
+
+

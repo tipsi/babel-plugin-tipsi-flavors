@@ -4,42 +4,48 @@ const { resolve, dirname } = require('path');
 let flavors = process.env.FLAVORS;
 flavors = flavors ? [...flavors.split(','), ''] : [];
 
-function resolveImport(source, file) {
+function resolveImport(source, file, opts) {
     let dirpath = file.split('/');
     dirpath = dirpath.slice(0, dirpath.length - 1).join('/');
 
-    let expectedPath;
-    for (suffix of flavors) {
-        const correctSuffix = suffix ? `.${suffix}` : '';
-        const pathname = resolve(dirpath, `${source}${correctSuffix}.js`);
-        const isExist = fs.existsSync(pathname);
+    flavors = !flavors.length && opts.FLAVORS.length ? [...opts.FLAVORS.split(','), ''] : flavors;
 
-        if (isExist) {
-            let nextPathName = pathname.split('/');
-            nextPathName = nextPathName[nextPathName.length - 1];
+    if (flavors.length) {
+        let expectedPath;
+        for (suffix of flavors) {
+            const correctSuffix = suffix ? `.${suffix}` : '';
+            const pathname = resolve(dirpath, `${source}${correctSuffix}.js`);
+            const isExist = fs.existsSync(pathname);
 
-            const originalPathArray = source.split('/');
-            expectedPath = [
-                ...originalPathArray.slice(0, originalPathArray.length - 1),
-                nextPathName
-            ].join('/');
+            if (isExist) {
+                let nextPathName = pathname.split('/');
+                nextPathName = nextPathName[nextPathName.length - 1];
 
-            if (expectedPath.endsWith('.js')) {
-                expectedPath = expectedPath.slice(0, expectedPath.length - 3);
+                const originalPathArray = source.split('/');
+                expectedPath = [
+                    ...originalPathArray.slice(0, originalPathArray.length - 1),
+                    nextPathName
+                ].join('/');
+
+                if (expectedPath.endsWith('.js')) {
+                    expectedPath = expectedPath.slice(0, expectedPath.length - 3);
+                }
+
+                break;
             }
-
-            break;
         }
+
+        return expectedPath;
     }
 
-    return expectedPath;
+    return source;
 }
 
 module.exports = ({ types: t }) => {
     let cachedReplaceFunction;
 
     function getModulePath(source, file, { opts }) {
-        const result = resolveImport(source, file);
+        const result = resolveImport(source, file, opts);
         return result !== source ? result : undefined;
     }
 
