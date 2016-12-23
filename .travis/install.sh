@@ -1,6 +1,5 @@
 #!/bin/bash
 
-npm i
-npm test
+npm install
 cd example_tmp
 npm install
