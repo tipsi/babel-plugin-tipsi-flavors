@@ -1,28 +1,29 @@
-const fs = require('fs')
-const { resolve } = require('path')
+var fs = require('fs')
+var resolve = require('path').resolve
 
-let flavors = process.env.FLAVORS
+var flavors = process.env.FLAVORS
 flavors = flavors ? [...flavors.split(','), ''] : []
 
 function resolveImport(source, file, opts) {
-  let dirpath = file.split('/')
+  var dirpath = file.split('/')
   dirpath = dirpath.slice(0, dirpath.length - 1).join('/')
 
   flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ?
-    [...opts.FLAVORS.split(','), ''] : flavors
+    opts.FLAVORS.split(',').concat('') : flavors
 
   if (flavors.length) {
-    let expectedPath
-    for (const suffix of flavors) {
-      const correctSuffix = suffix ? `.${suffix}` : ''
-      const pathname = resolve(dirpath, `${source}${correctSuffix}.js`)
-      const isExist = fs.existsSync(pathname)
+    var expectedPath
+    for (var i = 0; i < flavors.length; i++) {
+      var suffix = flavors[i]
+      var correctSuffix = suffix ? `.${suffix}` : ''
+      var pathname = resolve(dirpath, `${source}${correctSuffix}.js`)
+      var isExist = fs.existsSync(pathname)
 
       if (isExist) {
-        let nextPathName = pathname.split('/')
+        var nextPathName = pathname.split('/')
         nextPathName = nextPathName[nextPathName.length - 1]
 
-        const originalPathArray = source.split('/')
+        var originalPathArray = source.split('/')
         expectedPath = [
           ...originalPathArray.slice(0, originalPathArray.length - 1),
           nextPathName,
@@ -42,16 +43,20 @@ function resolveImport(source, file, opts) {
   return source
 }
 
-module.exports = ({ types: t }) => {
-  function getModulePath(source, file, { opts }) {
-    const result = resolveImport(source, file, opts)
+module.exports = function(babel) {
+  var t = babel.types
+
+  function getModulePath(source, file, state) {
+    var opts = state.opts
+    var result = resolveImport(source, file, opts)
     return result !== source ? result : undefined
   }
 
   function checkRequire(path) {
-    const { callee } = path.node
-    const { isIdentifier: isId, isMemberExpression: isMember } = t
-    const obj = { name: 'require' }
+    var callee = path.node.callee
+    var isId = t.isIdentifier
+    var isMember = t.isMemberExpression
+    var obj = { name: 'require' }
     return !isId(callee, obj) && !(isMember(callee) && isId(callee.object, obj))
   }
 
@@ -60,12 +65,12 @@ module.exports = ({ types: t }) => {
       return
     }
 
-    const source = isRequireCall ? path.node.arguments[0] : path.node.source
+    var source = isRequireCall ? path.node.arguments[0] : path.node.source
     if (source && source.type === 'StringLiteral') {
-      const modulePath = getModulePath(source.value, state.file.opts.filename, state)
+      var modulePath = getModulePath(source.value, state.file.opts.filename, state)
       if (modulePath) {
-        const specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
-        const pathValue = t.stringLiteral(modulePath)
+        var specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
+        var pathValue = t.stringLiteral(modulePath)
         path.replaceWith(
           t[isRequireCall ? 'callExpression' : 'importDeclaration'](
               specifiersValue,
@@ -79,12 +84,12 @@ module.exports = ({ types: t }) => {
   return {
     visitor: {
       CallExpression: {
-        exit(path, state) {
+        exit: function(path, state) {
           return transform(path, state, true)
         },
       },
       ImportDeclaration: {
-        exit(path, state) {
+        exit: function(path, state) {
           return transform(path, state)
         },
       },

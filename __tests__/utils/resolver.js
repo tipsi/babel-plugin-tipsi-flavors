@@ -1,18 +1,16 @@
-const babel = require('babel-core')
-const pluginImport = require('../../')
+var path = require('path')
+var fs = require('fs')
+var babel = require('babel-core')
+var pluginImport = require('../../')
 
-module.exports = filename => (
-  new Promise((resolve, reject) => {
+module.exports = function (filename) {
+  return new Promise(function (resolve, reject) {
     babel.transformFile(
       filename,
       { plugins: [pluginImport] },
-      ((err, { code }) => {
-        if (err) {
-          reject(err)
-        }
-
-        resolve(code)
-      })
+      function (err, res) {
+        return err ? reject(err) : resolve(res.code)
+      }
     )
   })
-)
+}

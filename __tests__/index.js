@@ -1,69 +1,84 @@
-const path = require('path')
-const test = require('tape-async')
-const resolver = require('./utils/resolver')
-const resolverOpts = require('./utils/resolverOpts')
-const getCode = require('./utils/getCode')
-const getAllFiles = require('./utils/getAllFiles')
+var path = require('path')
+var test = require('tape-async')
+var resolver = require('./utils/resolver')
+var resolverOpts = require('./utils/resolverOpts')
+var getCode = require('./utils/getCode')
+var getAllFiles = require('./utils/getAllFiles')
 
-test('Plugin should resolve modules correct via process.env.FLAVORS', async (t) => {
-  try {
-    const testSuitePath = path.resolve(__dirname, './testSuite.js')
-    const originalCode = await getCode(testSuitePath)
-    const originalImports = originalCode.split('\n').map(x => x.split('\'')[1])
+test('Plugin should resolve modules correct via process.env.FLAVORS', function (t) {
+  var testSuitePath = path.resolve(__dirname, './testSuite.js')
+  var originalCode
+  var originalImports
+  var transpiledCode
+  var transpiledImports
 
-    const transpiledCode = await resolver(testSuitePath)
-    const transpiledImports = transpiledCode.split('\n').filter(x => x).map(x => x.split('\'')[1])
+  return getCode(testSuitePath)
+    .then(function (data) {
+      originalCode = data
+      originalImports = data.split('\n').map(x => x.split('\'')[1])
 
-    t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
-
-    const flavoredFilesFolderPath = path.resolve(__dirname, './files')
-    let expectedPaths = await getAllFiles(flavoredFilesFolderPath)
-    expectedPaths = [
-      'babel-core',
-      ...expectedPaths.map(x => `./files/${x.slice(0, x.length - 3)}`),
-    ]
-
-    transpiledImports.forEach((x, i) => {
-      const message = x === originalImports[i] ?
-        'shouldn\'t be changed' : `should be changed into ${x}`
-      t.equal(x, expectedPaths[i], `${originalImports[i]} ${message}`)
+      return resolver(testSuitePath)
     })
-  } catch (e) {
-    t.fail(e)
-  }
+    .then(function (data) {
+      transpiledCode = data
+      transpiledImports = data.split('\n').filter(x => x).map(x => x.split('\'')[1])
+      t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
+
+      var flavoredFilesFolderPath = path.resolve(__dirname, './files')
+      return getAllFiles(flavoredFilesFolderPath)
+    })
+    .then(function (data) {
+      var expectedPaths = data.map(x => './files/' + x.slice(0, x.length - 3))
+      expectedPaths = ['babel-core'].concat(expectedPaths)
+
+      transpiledImports.forEach((x, i) => {
+        var message = x === originalImports[i] ?
+          'should not be changed' : 'should be changed into ' + x
+        t.equal(x, expectedPaths[i], originalImports[i] + ' ' + message)
+      })
+    })
+    .catch(function (e) {
+      t.fail(e)
+    })
 })
 
-test('Plugin should resolve modules correct via .babelrc options', async (t) => {
-  const OLD_FLAVORS = process.env.FLAVORS
+test('Plugin should resolve modules correct via .babelrc options', function (t) {
   process.env.FLAVORS = undefined
 
-  try {
-    t.equal(process.env.FLAVORS, 'undefined', 'FLAVORS environment variable is undefined')
+  t.equal(process.env.FLAVORS, 'undefined', 'FLAVORS environment variable is undefined')
 
-    const testSuitePath = path.resolve(__dirname, './testSuite.js')
-    const originalCode = await getCode(testSuitePath)
-    const originalImports = originalCode.split('\n').map(x => x.split('\'')[1])
+  var testSuitePath = path.resolve(__dirname, './testSuite.js')
+  var originalCode
+  var originalImports
+  var transpiledCode
+  var transpiledImports
 
-    const transpiledCode = await resolverOpts(testSuitePath)
-    const transpiledImports = transpiledCode.split('\n').filter(x => x).map(x => x.split('\'')[1])
+  return getCode(testSuitePath)
+    .then(function (data) {
+      originalCode = data
+      originalImports = data.split('\n').map(x => x.split('\'')[1])
 
-    t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
-
-    const flavoredFilesFolderPath = path.resolve(__dirname, './files')
-    let expectedPaths = await getAllFiles(flavoredFilesFolderPath)
-    expectedPaths = [
-      'babel-core',
-      ...expectedPaths.map(x => `./files/${x.slice(0, x.length - 3)}`),
-    ]
-
-    transpiledImports.forEach((x, i) => {
-      const message = x === originalImports[i] ?
-        'shouldn\'t be changed' : `should be changed into ${x}`
-      t.equal(x, expectedPaths[i], `${originalImports[i]} ${message}`)
+      return resolverOpts(testSuitePath)
     })
-  } catch (e) {
-    t.fail(e)
-  }
+    .then(function (data) {
+      transpiledCode = data
+      transpiledImports = data.split('\n').filter(x => x).map(x => x.split('\'')[1])
+      t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
 
-  process.env.FLAVORS = OLD_FLAVORS
+      var flavoredFilesFolderPath = path.resolve(__dirname, './files')
+      return getAllFiles(flavoredFilesFolderPath)
+    })
+    .then(function (data) {
+      var expectedPaths = data.map(x => './files/' + x.slice(0, x.length - 3))
+      expectedPaths = ['babel-core'].concat(expectedPaths)
+
+      transpiledImports.forEach((x, i) => {
+        var message = x === originalImports[i] ?
+          'should not be changed' : 'should be changed into ' + x
+        t.equal(x, expectedPaths[i], originalImports[i] + ' ' + message)
+      })
+    })
+    .catch(function (e) {
+      t.fail(e)
+    })
 })

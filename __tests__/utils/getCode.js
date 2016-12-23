@@ -1,7 +1,12 @@
-const fs = require('fs')
+var fs = require('fs')
 
-module.exports = filename => (
-  new Promise((resolve, reject) => (
-    fs.readFile(filename, (err, data) => err ? reject(err) : resolve(data.toString()))
-  ))
-)
+module.exports = function (filename) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(
+      filename,
+      function (err, data) {
+        return err ? reject(err) : resolve(data.toString())
+      }
+    )
+  })
+}

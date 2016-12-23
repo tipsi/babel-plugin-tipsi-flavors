@@ -1,7 +1,9 @@
-const fs = require('fs')
+var fs = require('fs')
 
-module.exports = folder => (
-  new Promise((resolve, reject) => (
-    fs.readdir(folder, (err, files) => err ? reject(err) : resolve(files))
-  ))
-)
+module.exports = function (folder) {
+  return new Promise(function (resolve, reject) {
+    fs.readdir(folder, function(err, files) {
+      return err ? reject(err) : resolve(files)
+    })
+  })
+}
