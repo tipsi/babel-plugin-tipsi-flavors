@@ -29,13 +29,15 @@ const module6 = require('./files/module6')
 ```
 
 ```bash
-ok 2 babel-core shouldn't be changed
-ok 3 ./files/module should be changed into ./files/module.custom
-ok 4 ./files/module2 should be changed into ./files/module2.tipsi
-ok 5 ./files/module3 should be changed into ./files/module3.whitelabel
-ok 6 ./files/module4 shouldn't be changed
-ok 7 ./files/module5 should be changed into ./files/module5.tipsi
-ok 8 ./files/module6 should be changed into ./files/module6.custom
+// transpiled code
+
+import babel from 'babel-core'
+import module from './files/module.custom'
+import module2 from './files/module2.tipsi'
+import module3 from './files/module3.whitelabel'
+import module4 from './files/module4'
+import module5 from './files/module5.tipsi'
+const module6 = require('./files/module6.custom')
 ```
 
 ### Install
@@ -69,3 +71,14 @@ ok 8 ./files/module6 should be changed into ./files/module6.custom
 ```
 
 #### Non React-Native environments as usual, just add plugin into .babelrc
+
+#### If you don't like environment variables, just use .babelrc to pass FLAVORS
+
+```bash
+# .babelrc
+
+{
+  ...
+  "plugins": [["tipsi-flavors", {"FLAVORS": "custom,tipsi"}]]
+}
+```

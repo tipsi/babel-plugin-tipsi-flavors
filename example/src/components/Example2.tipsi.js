@@ -9,7 +9,7 @@ export default class Example2Tipsi extends Component {
         <Text>Plugin does not see FLAVORS variable</Text>
         <Image
           style={{ width: 50, height: 50 }}
-          source={require('../img/white_logo.jpg')}
+          source={require('../img/tipsi_logo.png')}
         />
       </View>
     )
