@@ -1,3 +1,4 @@
+[![image](https://travis-ci.org/tipsi/babel-plugin-tipsi-flavors.svg?branch=master)](https://travis-ci.org/tipsi/babel-plugin-tipsi-flavors)
 # babel-plugin-tipsi-flavors
 Support build flavors for React Native applications  
 
