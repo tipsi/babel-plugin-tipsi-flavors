@@ -39,6 +39,7 @@ const module8 = require('./files/module8.js')
 // transpiled code
 
 import babel from 'babel-core'
+const module9 = require('./files/folder')
 import module from './files/module.custom'
 import module2 from './files/module2.tipsi'
 import module3 from './files/module3.whitelabel'
