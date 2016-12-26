@@ -15,8 +15,8 @@ function resolveImport(source, file, opts) {
   var expectedPath
   for (var i = 0; i < flvrs.length; i++) {
     var suffix = flvrs[i]
-    var correctSuffix = suffix ? `.${suffix}` : ''
-    var pathname = path.resolve(dirpath, `${source}${correctSuffix}.js`)
+    var correctSuffix = suffix ? '.' + suffix : ''
+    var pathname = path.resolve(dirpath, source + correctSuffix + '.js')
     var isExist = fs.existsSync(pathname)
 
     if (isExist) {
@@ -24,10 +24,10 @@ function resolveImport(source, file, opts) {
       nextPathName = nextPathName[nextPathName.length - 1]
 
       var originalPathArray = source.split('/')
-      expectedPath = [
-        ...originalPathArray.slice(0, originalPathArray.length - 1),
-        nextPathName,
-      ].join('/')
+      expectedPath = originalPathArray
+        .slice(0, originalPathArray.length - 1)
+        .concat(nextPathName)
+        .join('/')
 
       if (expectedPath.endsWith('.js')) {
         expectedPath = expectedPath.slice(0, expectedPath.length - 3)
