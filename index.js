@@ -35,7 +35,7 @@ function resolveImport(source, file, opts) {
     }
   }
 
-  return expectedPath
+  return expectedPath !== source ? expectedPath : undefined
 }
 
 module.exports = function(babel) {
