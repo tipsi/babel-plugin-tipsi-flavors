@@ -35,7 +35,7 @@ const module7 = require('./files/module7.js')
 const module8 = require('./files/module8.js')
 ```
 
-```bash
+```javascript
 // transpiled code
 
 import babel from 'babel-core'
