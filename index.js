@@ -12,17 +12,22 @@ function resolveImport(source, file, opts) {
     return source
   }
 
-  var expectedPath = source
+  var expectedPath
   for (var i = 0; i < flavors.length; i++) {
     var suffix = flavors[i]
     var correctSuffix = suffix ? '.' + suffix : ''
-    var pathname = path.resolve(dirpath, source + correctSuffix + '.js')
+    var parsedSourceName = path.parse(source)
+    var pathname = path.resolve(
+      dirpath,
+      parsedSourceName.dir,
+      parsedSourceName.name + correctSuffix + '.js'
+    )
     var isExist = fs.existsSync(pathname)
 
     if (isExist) {
       expectedPath = [path.dirname(source), path.basename(pathname)].join('/')
 
-      if (expectedPath.endsWith('.js')) {
+      if (!source.endsWith('.js')) {
         expectedPath = expectedPath.slice(0, expectedPath.length - 3)
       }
 

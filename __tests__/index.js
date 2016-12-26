@@ -16,7 +16,6 @@ test('Plugin should resolve modules correct via process.env.FLAVORS', function (
     .then(function (data) {
       originalCode = data
       originalImports = data.split('\n').map(x => x.split('\'')[1])
-
       return resolver(testSuitePath)
     })
     .then(function (data) {
@@ -28,7 +27,10 @@ test('Plugin should resolve modules correct via process.env.FLAVORS', function (
       return getAllFiles(flavoredFilesFolderPath)
     })
     .then(function (data) {
-      var expectedPaths = data.map(x => './files/' + x.slice(0, x.length - 3))
+      var expectedPaths = data.map((x, i) => {
+        const filename = !!path.extname(originalImports[i + 1]) ? x : path.parse(x).name
+        return './files/' + filename
+      })
       expectedPaths = ['babel-core'].concat(expectedPaths)
 
       transpiledImports.forEach((x, i) => {
@@ -69,7 +71,10 @@ test('Plugin should resolve modules correct via .babelrc options', function (t) 
       return getAllFiles(flavoredFilesFolderPath)
     })
     .then(function (data) {
-      var expectedPaths = data.map(x => './files/' + x.slice(0, x.length - 3))
+      var expectedPaths = data.map((x, i) => {
+        const filename = !!path.extname(originalImports[i + 1]) ? x : path.parse(x).name
+        return './files/' + filename
+      })
       expectedPaths = ['babel-core'].concat(expectedPaths)
 
       transpiledImports.forEach((x, i) => {
