@@ -20,7 +20,7 @@ function resolveImport(source, file, opts) {
     var isExist = fs.existsSync(pathname)
 
     if (isExist) {
-      expectedPath = [path.dirname(source), path.basename(pathname)].join(path.sep)
+      expectedPath = [path.dirname(source), path.basename(pathname)].join('/')
 
       if (expectedPath.endsWith('.js')) {
         expectedPath = expectedPath.slice(0, expectedPath.length - 3)
