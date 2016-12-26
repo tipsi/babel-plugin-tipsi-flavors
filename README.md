@@ -9,24 +9,30 @@ Look into tests results while `FLAVORS=custom,tipsi,whitelabel`
 # destination folder structure
 
 ❯ ls -la ./files
+folder
 module.custom.js
 module2.tipsi.js
 module3.whitelabel.js
 module4.js
 module5.tipsi.js
 module6.custom.js
+module7.js
+module8.custom.js
 ```
 
 ```javascript
 // testSuite.js
 
 import babel from 'babel-core'
+const module9 = require('./files/folder')
 import module from './files/module'
 import module2 from './files/module2'
 import module3 from './files/module3'
 import module4 from './files/module4'
 import module5 from './files/module5'
 const module6 = require('./files/module6')
+const module7 = require('./files/module7.js')
+const module8 = require('./files/module8.js')
 ```
 
 ```bash
@@ -39,6 +45,8 @@ import module3 from './files/module3.whitelabel'
 import module4 from './files/module4'
 import module5 from './files/module5.tipsi'
 const module6 = require('./files/module6.custom')
+const module7 = require('./files/module7.js')
+const module8 = require('./files/module8.custom.js')
 ```
 
 ### Install
