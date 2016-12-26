@@ -12,7 +12,7 @@ function resolveImport(source, file, opts) {
     return source
   }
 
-  var expectedPath
+  var expectedPath = source
   for (var i = 0; i < flavors.length; i++) {
     var suffix = flavors[i]
     var correctSuffix = suffix ? '.' + suffix : ''
