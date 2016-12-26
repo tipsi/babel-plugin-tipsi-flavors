@@ -11,36 +11,36 @@ function resolveImport(source, file, opts) {
   flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ?
     opts.FLAVORS.split(',').concat('') : flavors
 
-  if (flavors.length) {
-    var expectedPath
-    for (var i = 0; i < flavors.length; i++) {
-      var suffix = flavors[i]
-      var correctSuffix = suffix ? `.${suffix}` : ''
-      var pathname = resolve(dirpath, `${source}${correctSuffix}.js`)
-      var isExist = fs.existsSync(pathname)
-
-      if (isExist) {
-        var nextPathName = pathname.split('/')
-        nextPathName = nextPathName[nextPathName.length - 1]
-
-        var originalPathArray = source.split('/')
-        expectedPath = [
-          ...originalPathArray.slice(0, originalPathArray.length - 1),
-          nextPathName,
-        ].join('/')
-
-        if (expectedPath.endsWith('.js')) {
-          expectedPath = expectedPath.slice(0, expectedPath.length - 3)
-        }
-
-        break
-      }
-    }
-
-    return expectedPath
+  if (!flavors.length) {
+    return source
   }
 
-  return source
+  var expectedPath
+  for (var i = 0; i < flavors.length; i++) {
+    var suffix = flavors[i]
+    var correctSuffix = suffix ? `.${suffix}` : ''
+    var pathname = resolve(dirpath, `${source}${correctSuffix}.js`)
+    var isExist = fs.existsSync(pathname)
+
+    if (isExist) {
+      var nextPathName = pathname.split('/')
+      nextPathName = nextPathName[nextPathName.length - 1]
+
+      var originalPathArray = source.split('/')
+      expectedPath = [
+        ...originalPathArray.slice(0, originalPathArray.length - 1),
+        nextPathName,
+      ].join('/')
+
+      if (expectedPath.endsWith('.js')) {
+        expectedPath = expectedPath.slice(0, expectedPath.length - 3)
+      }
+
+      break
+    }
+  }
+
+  return expectedPath
 }
 
 module.exports = function(babel) {
