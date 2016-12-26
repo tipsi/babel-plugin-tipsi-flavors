@@ -1,22 +1,20 @@
 var fs = require('fs')
 var path = require('path')
 
-var flavors = process.env.FLAVORS
-flavors = flavors ? [...flavors.split(','), ''] : []
+var flvrs = process.env.FLAVORS
+flvrs = flvrs ? flvrs.split(',').concat('') : []
 
 function resolveImport(source, file, opts) {
   var dirpath = path.dirname(file)
+  flvrs = !flvrs.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS.concat('') : flvrs
 
-  flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ?
-    opts.FLAVORS.split(',').concat('') : flavors
-
-  if (!flavors.length) {
+  if (!flvrs.length) {
     return source
   }
 
   var expectedPath
-  for (var i = 0; i < flavors.length; i++) {
-    var suffix = flavors[i]
+  for (var i = 0; i < flvrs.length; i++) {
+    var suffix = flvrs[i]
     var correctSuffix = suffix ? `.${suffix}` : ''
     var pathname = path.resolve(dirpath, `${source}${correctSuffix}.js`)
     var isExist = fs.existsSync(pathname)

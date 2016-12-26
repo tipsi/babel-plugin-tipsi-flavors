@@ -4,7 +4,7 @@
   "description": "Babel plugin helps set imports with provided order",
   "main": "index.js",
   "scripts": {
-    "test": "FLAVORS=custom,tipsi,whitelabel node --harmony ./__tests__/index.js",
+    "test": "FLAVORS=custom,tipsi,whitelabel node ./__tests__/index.js",
     "ci": "scripts/local-ci.sh"
   },
   "repository": {
