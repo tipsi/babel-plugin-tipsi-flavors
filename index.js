@@ -1,33 +1,26 @@
 var fs = require('fs')
 var path = require('path')
 
-var flvrs = process.env.FLAVORS
-flvrs = flvrs ? flvrs.split(',').concat('') : []
+var flavors = process.env.FLAVORS
+flavors = flavors ? flavors.split(',') : []
 
 function resolveImport(source, file, opts) {
   var dirpath = path.dirname(file)
-  flvrs = !flvrs.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS.concat('') : flvrs
+  flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS : flavors
 
-  if (!flvrs.length) {
+  if (!flavors.length) {
     return source
   }
 
   var expectedPath
-  for (var i = 0; i < flvrs.length; i++) {
-    var suffix = flvrs[i]
+  for (var i = 0; i < flavors.length; i++) {
+    var suffix = flavors[i]
     var correctSuffix = suffix ? '.' + suffix : ''
     var pathname = path.resolve(dirpath, source + correctSuffix + '.js')
     var isExist = fs.existsSync(pathname)
 
     if (isExist) {
-      var nextPathName = pathname.split('/')
-      nextPathName = nextPathName[nextPathName.length - 1]
-
-      var originalPathArray = source.split('/')
-      expectedPath = originalPathArray
-        .slice(0, originalPathArray.length - 1)
-        .concat(nextPathName)
-        .join('/')
+      expectedPath = [path.dirname(source), path.basename(pathname)].join(path.sep)
 
       if (expectedPath.endsWith('.js')) {
         expectedPath = expectedPath.slice(0, expectedPath.length - 3)
@@ -42,12 +35,6 @@ function resolveImport(source, file, opts) {
 
 module.exports = function(babel) {
   var t = babel.types
-
-  function getModulePath(source, file, state) {
-    var opts = state.opts
-    var result = resolveImport(source, file, opts)
-    return result !== source ? result : undefined
-  }
 
   function checkRequire(path) {
     var callee = path.node.callee
@@ -64,7 +51,7 @@ module.exports = function(babel) {
 
     var source = isRequireCall ? path.node.arguments[0] : path.node.source
     if (source && source.type === 'StringLiteral') {
-      var modulePath = getModulePath(source.value, state.file.opts.filename, state)
+      var modulePath = resolveImport(source.value, state.file.opts.filename, state.opts)
       if (modulePath) {
         var specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
         var pathValue = t.stringLiteral(modulePath)
