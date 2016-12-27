@@ -6,6 +6,11 @@ flavors = flavors ? flavors.split(',') : []
 
 function resolveImport(source, file, opts) {
   var dirpath = path.dirname(file)
+
+  // opts passed through .babelrc as second argument
+  //
+  // .babelrc
+  // "plugins": [["tipsi-flavors", {"FLAVORS": ["custom", "tipsi"]}]]
   flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS : flavors
 
   if (!flavors.length) {
@@ -27,6 +32,9 @@ function resolveImport(source, file, opts) {
     if (isExist) {
       expectedPath = [path.dirname(source), path.basename(pathname)].join('/')
 
+      // We care about file extensions
+      // If source code doesn't contain '.js' extension,
+      // we will not pass it through transpiled code
       if (!source.endsWith('.js')) {
         expectedPath = expectedPath.slice(0, expectedPath.length - 3)
       }
@@ -35,6 +43,9 @@ function resolveImport(source, file, opts) {
     }
   }
 
+  // If we will not return undefined while expectedPath === source
+  // babel will infinitely visit updated paths
+  // and transform them again and again
   return expectedPath !== source ? expectedPath : undefined
 }
 
