@@ -83,6 +83,7 @@ const module8 = require('./files/module8.custom.js')
 #### Non React-Native environments as usual, just add plugin into .babelrc
 
 #### If you don't like environment variables, just use .babelrc to pass FLAVORS
+#### But remember that environment variables has higher priority
 
 ```bash
 # .babelrc
