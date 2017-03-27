@@ -1,11 +1,11 @@
 var fs = require('fs')
 var path = require('path')
 
-var flavors = process.env.FLAVORS
-flavors = flavors ? flavors.split(',') : []
-
 function resolveImport(source, file, opts) {
   var dirpath = path.dirname(file)
+  var envVar = opts.env || 'FLAVORS'
+  var flavors = process.env[envVar]
+  flavors = flavors ? flavors.split(',') : []
 
   // opts passed through .babelrc as second argument
   //
@@ -14,7 +14,7 @@ function resolveImport(source, file, opts) {
   flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS : flavors
 
   if (!flavors.length) {
-    return source
+    return undefined
   }
 
   var expectedPath
