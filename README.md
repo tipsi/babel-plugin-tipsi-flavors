@@ -90,6 +90,6 @@ const module8 = require('./files/module8.custom.js')
 
 {
   ...
-  "plugins": [["tipsi-flavors", {"FLAVORS": ["custom", "tipsi"]}]]
+  "plugins": [["tipsi-flavors", {"flavors": ["custom", "tipsi"]}]]
 }
 ```
