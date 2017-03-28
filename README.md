@@ -2,7 +2,7 @@
 # babel-plugin-tipsi-flavors
 Support build flavors for React Native applications  
 
-This plugin helps rewrite you imports by rules from environment variable `FLAVORS`  
+This plugin helps rewrite you imports by rules from environment variable `FLAVORS`  by default
 Look into tests results while `FLAVORS=custom,tipsi,whitelabel`
 
 ```bash
@@ -81,6 +81,25 @@ const module8 = require('./files/module8.custom.js')
 ```
 
 #### Non React-Native environments as usual, just add plugin into .babelrc
+
+#### If you want to set custom environment variable just pass it into .babelrc
+
+```bash
+# .babelrc
+
+{
+  ...
+  "plugins": [["tipsi-flavors", {"env": "MY_CUSTOM_VAR"}]]
+}
+```
+
+#### And run it like:
+
+```bash
+❯ MY_CUSTOM_VAR=custom,tipsi,whitelabel npm start
+
+❯ react-native run-ios (run-android)
+```
 
 #### If you don't like environment variables, just use .babelrc to pass FLAVORS
 #### But remember that environment variables has higher priority
