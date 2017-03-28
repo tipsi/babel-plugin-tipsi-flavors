@@ -55,7 +55,7 @@ test('Plugin should resolve modules correct via process.env.FLAVORS', function (
   return checkResolver(t, resolver)
 })
 
-test('Plugin should resolve modules correct via .babelrc "flavor" option', function (t) {
+test('Plugin should resolve modules correct via .babelrc "flavors" option', function (t) {
   delete process.env.FLAVORS
 
   t.equal(process.env.FLAVORS, undefined, 'FLAVORS environment variable is undefined')
