@@ -1,10 +1,10 @@
 {
   "name": "babel-plugin-tipsi-flavors",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Babel plugin helps set imports with provided order",
   "main": "index.js",
   "scripts": {
-    "test": "FLAVORS=custom,tipsi,whitelabel node ./__tests__/index.js",
+    "test": "node ./__tests__/index.js",
     "ci": "scripts/local-ci.sh"
   },
   "repository": {

@@ -1,20 +1,27 @@
 var fs = require('fs')
 var path = require('path')
 
-var flavors = process.env.FLAVORS
-flavors = flavors ? flavors.split(',') : []
+// opts passed through .babelrc as second argument
+// {
+//   "plugins": [["tipsi-flavors", { "env": "APP_NAME", "flavors": ["custom", "tipsi"]}]]
+// }
+function resolveFlavors(opts) {
+  var string = process.env[opts.env || 'FLAVORS']
 
-function resolveImport(source, file, opts) {
+  if (string) {
+    return string.split(',')
+  } else if (opts.flavors) {
+    return opts.flavors
+  }
+
+  return []
+}
+
+function resolveImport(source, file, flavors) {
   var dirpath = path.dirname(file)
 
-  // opts passed through .babelrc as second argument
-  //
-  // .babelrc
-  // "plugins": [["tipsi-flavors", {"FLAVORS": ["custom", "tipsi"]}]]
-  flavors = !flavors.length && opts.FLAVORS && opts.FLAVORS.length ? opts.FLAVORS : flavors
-
   if (!flavors.length) {
-    return source
+    return undefined
   }
 
   var expectedPath
@@ -67,7 +74,8 @@ module.exports = function(babel) {
 
     var source = isRequireCall ? path.node.arguments[0] : path.node.source
     if (source && source.type === 'StringLiteral') {
-      var modulePath = resolveImport(source.value, state.file.opts.filename, state.opts)
+      var flavors = resolveFlavors(state.opts)
+      var modulePath = resolveImport(source.value, state.file.opts.filename, flavors)
       if (modulePath) {
         var specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
         var pathValue = t.stringLiteral(modulePath)
