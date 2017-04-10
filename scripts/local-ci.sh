@@ -40,6 +40,7 @@ isMacOS() {
 ###################
 npm i
 npm test
+npm run run:emulator:android
 
 # Check is macOS
 ! isMacOS && echo "Current os is not macOS, setup for iOS will be skipped"

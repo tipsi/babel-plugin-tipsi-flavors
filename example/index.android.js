@@ -7,20 +7,17 @@ import {
 } from 'react-native'
 import Example from './src/components/Example'
 import Example2 from './src/components/Example2'
+import Example3 from './src/components/Example3'
+import Example4 from './src/components/Example4'
 
 export default class example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome} accessible accessibilityLabel="title">
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
         <Example />
         <Example2 />
+        <Example3 />
+        <Example4 />
       </View>
     )
   }

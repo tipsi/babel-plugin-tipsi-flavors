@@ -1,24 +1,23 @@
 import React, { Component } from 'react'
 import { Text, View, Image } from 'react-native'
+import testID from '../utils/testID'
 
 export default class ExampleTipsi extends Component {
   render() {
     return (
       <View>
-        <Text accessible accessibilityLabel="exampleText1">
+        <Text {...testID('exampleText1')}>
           Babel Plugin Works on Example 1!
         </Text>
         <Image
           style={{ width: 50, height: 50 }}
           source={require('../img/tipsi_logo.png')}
-          accessible
-          accessibilityLabel="localImage1"
+          {...testID('localImage1')}
         />
         <Image
           style={{ width: 50, height: 50 }}
           source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
-          accessible
-          accessibilityLabel="remoteImage1"
+          {...testID('remoteImage1')}
         />
       </View>
     )

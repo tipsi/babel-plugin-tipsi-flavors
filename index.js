@@ -24,29 +24,39 @@ function resolveImport(source, file, flavors) {
     return undefined
   }
 
+  var parsedSourceName = path.parse(source)
+  var parsedExtension = parsedSourceName.ext
+  var isFlavorExtension = flavors.indexOf(parsedExtension.replace('.', '')) !== -1
+  var isJSExtension = parsedExtension === '.js'
+  var isEmptyExtension = !parsedExtension
+  var isAnotherFileTypeExtension = !(isFlavorExtension || isJSExtension || isEmptyExtension)
+  var correctExtension = isAnotherFileTypeExtension ? parsedExtension : '.js'
   var expectedPath
-  for (var i = 0; i < flavors.length; i++) {
-    var suffix = flavors[i]
-    var correctSuffix = suffix ? '.' + suffix : ''
-    var parsedSourceName = path.parse(source)
-    var pathname = path.resolve(
-      dirpath,
-      parsedSourceName.dir,
-      parsedSourceName.name + correctSuffix + '.js'
-    )
-    var isExist = fs.existsSync(pathname)
 
-    if (isExist) {
-      expectedPath = [path.dirname(source), path.basename(pathname)].join('/')
+  if (parsedExtension !== '.') {
+    for (var i = 0; i < flavors.concat('').length; i += 1) {
+      var suffix = flavors[i]
+      var correctSuffix = suffix ? '.' + suffix : ''
 
-      // We care about file extensions
-      // If source code doesn't contain '.js' extension,
-      // we will not pass it through transpiled code
-      if (!source.endsWith('.js')) {
-        expectedPath = expectedPath.slice(0, expectedPath.length - 3)
+      var pathname = path.resolve(
+        dirpath,
+        parsedSourceName.dir,
+        parsedSourceName.name + correctSuffix + correctExtension
+      )
+
+      var isExist = fs.existsSync(pathname)
+      if (isExist) {
+        expectedPath = [path.dirname(source), path.basename(pathname)].join('/')
+
+        // We care about file extensions
+        // If source code doesn't contain '.js' extension,
+        // we will not pass it through transpiled code
+        if (!isAnotherFileTypeExtension && !source.endsWith('.js')) {
+          expectedPath = expectedPath.slice(0, expectedPath.length - 3)
+        }
+
+        break
       }
-
-      break
     }
   }
 
