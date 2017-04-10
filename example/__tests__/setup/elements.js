@@ -3,46 +3,14 @@ import helper from 'tipsi-appium-helper'
 const { idFromXPath, idFromAccessId, select } = helper
 
 helper.extend('elements', () => ({
-  title: select({
-    ios: idFromXPath(`
-      /XCUIElementTypeApplication/XCUIElementTypeWindow/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeStaticText[1]
-    `),
-    android: idFromAccessId('title'),
-  }),
-  exampleText1: select({
-    ios: idFromXPath(`
-      /XCUIElementTypeApplication/XCUIElementTypeWindow/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/
-      XCUIElementTypeOther[1]/XCUIElementTypeStaticText
-    `),
-    android: idFromAccessId('exampleText1'),
-  }),
-  exampleText2: select({
-    ios: idFromXPath(`
-      /XCUIElementTypeApplication/XCUIElementTypeWindow/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/
-      XCUIElementTypeOther[2]/XCUIElementTypeStaticText
-    `),
-    android: idFromAccessId('exampleText2'),
-  }),
-  localImage1: select({
-    ios: idFromXPath(`
-      /XCUIElementTypeApplication/XCUIElementTypeWindow/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/
-      XCUIElementTypeOther[1]/XCUIElementTypeImage
-    `),
-    android: idFromAccessId('localImage1'),
-  }),
-  localImage2: select({
-    ios: idFromXPath(`
-      /XCUIElementTypeApplication/XCUIElementTypeWindow/XCUIElementTypeOther/
-      XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/
-      XCUIElementTypeOther[2]/XCUIElementTypeImage
-    `),
-    android: idFromAccessId('localImage2'),
-  }),
+  exampleText1: idFromAccessId('exampleText1'),
+  exampleText2: idFromAccessId('exampleText2'),
+  exampleText3: idFromAccessId('exampleText3'),
+  exampleText4: idFromAccessId('exampleText4'),
+  localImage1: idFromAccessId('localImage1'),
+  localImage2: idFromAccessId('localImage2'),
+  localImage3: idFromAccessId('localImage3'),
+  localImage4: idFromAccessId('localImage4'),
   remoteImage1: idFromAccessId('remoteImage1'),
   remoteImage2: idFromAccessId('remoteImage2'),
 }))
