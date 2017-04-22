@@ -66,30 +66,40 @@ function resolveImport(source, file, flavors) {
   return expectedPath !== source ? expectedPath : undefined
 }
 
+function isFileFlavored(flavors, filename) {
+  return flavors.some(flavor => path.parse(filename).base.indexOf('.' + flavor) !== -1)
+}
+
 module.exports = function(babel) {
   var t = babel.types
 
-  function checkRequire(path) {
-    var callee = path.node.callee
+  function checkRequire(filePath) {
+    var callee = filePath.node.callee
     var isId = t.isIdentifier
     var isMember = t.isMemberExpression
     var obj = { name: 'require' }
     return !isId(callee, obj) && !(isMember(callee) && isId(callee.object, obj))
   }
 
-  function transform(path, state, isRequireCall) {
-    if (isRequireCall && checkRequire(path)) {
+  function transform(filePath, state, isRequireCall) {
+    if (isRequireCall && checkRequire(filePath)) {
       return
     }
 
-    var source = isRequireCall ? path.node.arguments[0] : path.node.source
+    var source = isRequireCall ? filePath.node.arguments[0] : filePath.node.source
     if (source && source.type === 'StringLiteral') {
       var flavors = resolveFlavors(state.opts)
-      var modulePath = resolveImport(source.value, state.file.opts.filename, flavors)
+      var filename = state.file.opts.filename
+
+      if (isFileFlavored(flavors, filename)) {
+        return
+      }
+
+      var modulePath = resolveImport(source.value, filename, flavors)
       if (modulePath) {
-        var specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
+        var specifiersValue = isRequireCall ? filePath.node.callee : filePath.node.specifiers
         var pathValue = t.stringLiteral(modulePath)
-        path.replaceWith(
+        filePath.replaceWith(
           t[isRequireCall ? 'callExpression' : 'importDeclaration'](
               specifiersValue,
               isRequireCall ? [pathValue] : pathValue
@@ -102,13 +112,13 @@ module.exports = function(babel) {
   return {
     visitor: {
       CallExpression: {
-        exit: function(path, state) {
-          return transform(path, state, true)
+        exit: function(filePath, state) {
+          return transform(filePath, state, true)
         },
       },
       ImportDeclaration: {
-        exit: function(path, state) {
-          return transform(path, state)
+        exit: function(filePath, state) {
+          return transform(filePath, state)
         },
       },
     },

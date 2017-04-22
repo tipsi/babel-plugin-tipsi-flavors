@@ -1,0 +1,1 @@
+import testSuite from './testSuite'
