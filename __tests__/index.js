@@ -58,6 +58,46 @@ function checkResolver(t, resolver) {
     })
 }
 
+function checkFlavoredResolver(t, resolver) {
+  var testSuitePath = path.resolve(__dirname, './testSuite.custom.js')
+  var originalCode
+  var originalImports
+  var transpiledCode
+  var transpiledImports
+
+  return getCode(testSuitePath)
+    .then(function (data) {
+      originalCode = data
+      originalImports = data.split('\n').map(x => x.split('\'')[1]).filter(x => x)
+      return resolver(testSuitePath)
+    })
+    .then(function (data) {
+      transpiledCode = data
+      transpiledImports = data.split('\n').filter(x => x).map(x => x.split('\'')[1]).filter(x => x)
+      t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
+
+      var originalFilesFolderPath = path.resolve(__dirname, './')
+      return getAllFiles(originalFilesFolderPath)
+    })
+    .then(function (jsFilesPaths) {
+      var expectedPaths = jsFilesPaths.map(function (x, i) {
+        return './' + path.parse(x).name
+      })
+
+      transpiledImports.forEach(function (x, i) {
+        t.ok(
+          expectedPaths.find(function (item) {
+            return item === x
+          }),
+          originalImports[i] + ' ' + 'should not be changed'
+        )
+      })
+    })
+    .catch(function (e) {
+      t.fail(e)
+    })
+}
+
 test('Plugin should resolve modules correct via process.env.FLAVORS', function (t) {
   process.env.FLAVORS = flavorsString
   t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
@@ -80,4 +120,14 @@ test('Plugin should resolve modules correct via .babelrc "env" option', function
   t.equal(process.env.APP_NAME, flavorsString, 'APP_NAME environment variable is tipsi')
 
   return checkResolver(t, createResolver({ env: 'APP_NAME' }))
+})
+
+test('Plugin should not transform original import from flavored files', function (t) {
+  delete process.env.APP_NAME
+  t.equal(process.env.APP_NAME, undefined, 'APP_NAME environment variable is undefined')
+
+  process.env.FLAVORS = flavorsString
+  t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
+
+  return checkFlavoredResolver(t, createResolver())
 })
