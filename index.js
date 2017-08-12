@@ -25,6 +25,14 @@ function resolveImport(source, file, flavors) {
   }
 
   var parsedSourceName = path.parse(source)
+
+  // If there is "dir" property as an empty string
+  // Looks like it's a module
+  // Don't do anything with it
+  if (!parsedSourceName.dir) {
+    return undefined
+  }
+
   var parsedExtension = parsedSourceName.ext
   var isFlavorExtension = flavors.indexOf(parsedExtension.replace('.', '')) !== -1
   var isJSExtension = parsedExtension === '.js'
