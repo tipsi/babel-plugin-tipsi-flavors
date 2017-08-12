@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-tipsi-flavors",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Babel plugin helps set imports with provided order",
   "main": "index.js",
   "scripts": {
