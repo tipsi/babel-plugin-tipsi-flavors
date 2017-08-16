@@ -6,5 +6,4 @@ scripts
 .editorconfig
 .eslintrc
 .travis.yml
-
-
+*.tgz
