@@ -85,11 +85,11 @@ module.exports = function(babel) {
     return !isId(callee, obj) && !(isMember(callee) && isId(callee.object, obj))
   }
 
-  function transform(path, state, isRequireCall) {
+  function transform(path, state, isRequireCall, needSpecifiers = true) {
     if (isRequireCall && checkRequire(path)) {
       return
     }
-
+    var expression = path.node.type  // CallExpression, ImportDeclaration, ExportAllDeclaration and etc
     var source = isRequireCall ? path.node.arguments[0] : path.node.source
     if (source && source.type === 'StringLiteral') {
       var flavors = resolveFlavors(state.opts)
@@ -97,12 +97,21 @@ module.exports = function(babel) {
       if (modulePath) {
         var specifiersValue = isRequireCall ? path.node.callee : path.node.specifiers
         var pathValue = t.stringLiteral(modulePath)
-        path.replaceWith(
-          t[isRequireCall ? 'callExpression' : 'importDeclaration'](
+        if (needSpecifiers) {
+          var replacement = t[expression](
               specifiersValue,
               isRequireCall ? [pathValue] : pathValue
           )
-        )
+        } else {
+          /* Will be something like:
+             { type: 'ExportAllDeclaration',
+             source:
+             { type: 'StringLiteral',
+             value: './exportFilesTest/moduleExport.tipsi' } }
+           */
+          var replacement = t[expression](pathValue)
+        }
+        path.replaceWith(replacement)
       }
     }
   }
@@ -117,6 +126,11 @@ module.exports = function(babel) {
       ImportDeclaration: {
         exit: function(path, state) {
           return transform(path, state)
+        },
+      },
+      ExportAllDeclaration: {
+        exit: function(path, state) {
+          return transform(path, state, false, false)
         },
       },
     },
