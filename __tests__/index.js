@@ -45,6 +45,7 @@ function checkResolver(t, resolver) {
           : path.parse(x).name
         return './files/img/' + filename
       })
+
       expectedPaths = ['babel-core'].concat(expectedPaths, expectedImagesPaths)
 
       transpiledImports.forEach((x, i) => {
@@ -55,6 +56,41 @@ function checkResolver(t, resolver) {
     })
     .catch(function (e) {
       t.fail(e)
+    })
+}
+
+function exportResolver(t, resolver) {
+  var testSuitePath = path.resolve(__dirname, './testExportSuite.js')
+  var originalCode
+  var originalExports
+  var transpiledCode
+  var transpiledExports
+
+  return getCode(testSuitePath)
+    .then(function (data) {
+      originalCode = data
+      originalExports = data.split('\n').map(x => x.split('\'')[1]).filter(x => x)
+      return resolver(testSuitePath)
+    })
+    .then(function (data) {
+      transpiledCode = data
+      transpiledExports = data.split('\n').filter(x => x).map(x => x.split('\'')[1]).filter(x => x)
+      t.notEqual(transpiledCode, originalCode, 'Code should be successfully transpiled')
+
+      var exportedFolderPath = path.resolve(__dirname, './exportFilesTest')
+      return getAllFiles(exportedFolderPath)
+    })
+    .then(function (jsFilesPaths) {
+      var expectedPaths = jsFilesPaths.map((x, i) => {
+        var filename = !!path.extname(originalExports[i]) ? x : path.parse(x).name
+        return './exportFilesTest/' + filename
+      })
+
+      transpiledExports.forEach((x, i) => {
+        var message = x === originalExports[i] ?
+          'should not be changed' : 'should be changed into ' + x
+        t.equal(x, expectedPaths[i], originalExports[i] + ' ' + message)
+      })
     })
 }
 
@@ -81,3 +117,11 @@ test('Plugin should resolve modules correct via .babelrc "env" option', function
 
   return checkResolver(t, createResolver({ env: 'APP_NAME' }))
 })
+
+test('Plugin should resolve modules with override exports', function (t) {
+  process.env.FLAVORS = flavorsString
+  t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
+
+  return exportResolver(t, createResolver())
+})
+
