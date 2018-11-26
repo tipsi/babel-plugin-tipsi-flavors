@@ -133,6 +133,16 @@ module.exports = function(babel) {
           return transform(path, state, false, false)
         },
       },
+      ExportDefaultDeclaration: {
+        exit: function(path, state) {
+          return transform(path, state)
+        },
+      },
+      ExportNamedDeclaration: {
+        exit: function(path, state) {
+          return transform(path, state)
+        },
+      },
     },
   }
 }

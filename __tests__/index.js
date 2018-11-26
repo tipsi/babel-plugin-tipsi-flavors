@@ -59,8 +59,7 @@ function checkResolver(t, resolver) {
     })
 }
 
-function exportResolver(t, resolver) {
-  var testSuitePath = path.resolve(__dirname, './testExportSuite.js')
+function exportResolver(t, resolver, testSuitePath) {
   var originalCode
   var originalExports
   var transpiledCode
@@ -122,6 +121,25 @@ test('Plugin should resolve modules with override exports', function (t) {
   process.env.FLAVORS = flavorsString
   t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
 
-  return exportResolver(t, createResolver())
+  var testSuitePath = path.resolve(__dirname, './testExportSuite.js')
+
+  return exportResolver(t, createResolver(), testSuitePath)
 })
 
+test('Plugin should resolve modules with override named exports', function (t) {
+  process.env.FLAVORS = flavorsString
+  t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
+
+  var testSuitePath = path.resolve(__dirname, './testExportNamedSuite.js')
+
+  return exportResolver(t, createResolver(), testSuitePath)
+})
+
+test('Plugin should resolve modules with override default exports', function (t) {
+  process.env.FLAVORS = flavorsString
+  t.equal(process.env.FLAVORS, flavorsString, 'FLAVORS environment variable is ' + flavorsString)
+
+  var testSuitePath = path.resolve(__dirname, './testExportDefaultSuite.js')
+
+  return exportResolver(t, createResolver(), testSuitePath)
+})
